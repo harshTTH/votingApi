@@ -18,7 +18,7 @@ public class Main extends HttpServlet {
     private static final String PASS = "a3ca3bab";
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (connectDB()) {
             System.out.println("Database Connection Successful");
         } else {
