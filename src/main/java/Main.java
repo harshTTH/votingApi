@@ -13,9 +13,9 @@ public class Main extends HttpServlet {
     private static Connection conn = null; 
     private static final long serialVersionUID = 1L;
 
-    private String DB = "jdbc:mysql://us-cdbr-gcp-east-01.cleardb.net/gcp_d3a947905984c5db5bb5";
-    private String USER = "b4285c8592ce72";
-    private String PASS = "a3ca3bab";
+    private static final String DB = "jdbc:mysql://us-cdbr-gcp-east-01.cleardb.net/gcp_d3a947905984c5db5bb5";
+    private static final String USER = "b4285c8592ce72";
+    private static final String PASS = "a3ca3bab";
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
