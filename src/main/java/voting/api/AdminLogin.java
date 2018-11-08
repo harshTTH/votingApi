@@ -23,7 +23,7 @@ public class AdminLogin extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
-    private static final String query = "select * from admin where user = %1s and pass = %2s;";
+    private static final String query = "select * from admin where user = '%1s' and pass = '%2s';";
     private static final String DB = "jdbc:mysql://us-cdbr-gcp-east-01.cleardb.net/gcp_d3a947905984c5db5bb5";
     private static final String USER = "b4285c8592ce72";
     private static final String PASS = "a3ca3bab";
