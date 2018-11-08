@@ -12,13 +12,16 @@
     </description>
 
     <servlet>
-        <servlet-name>MainServlet</servlet-name>
-        <servlet-class>Main</servlet-class>
+    	<description>
+    	</description>
+    	<display-name>Admin Login</display-name>
+    	<servlet-name>AdminLogin</servlet-name>
+    	<servlet-class>voting.api.AdminLogin</servlet-class>
     </servlet>
 
     <servlet-mapping>
-        <servlet-name>MainServlet</servlet-name>
-        <url-pattern>/adminLogin</url-pattern>
+    	<servlet-name>AdminLogin</servlet-name>
+    	<url-pattern>/admin</url-pattern>
     </servlet-mapping>
 
 </web-app>
