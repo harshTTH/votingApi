@@ -1,5 +1,6 @@
 package voting.api;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -8,11 +9,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.IllegalFormatException;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 
 public class AdminLogin extends HttpServlet {
 
@@ -34,15 +38,25 @@ public class AdminLogin extends HttpServlet {
         response.setContentType("text/html");
         response.setCharacterEncoding("UTF-8");
         out = response.getWriter();
-        String userName = request.getParameter("username");
-        String passWord = request.getParameter("password");
-        if (connectDB(userName, passWord)) {
-            out.println("True");
-            out.println(request.getSession().getId());
-        } else {
-            out.println("False");
+        
+        StringBuffer jb = new StringBuffer();
+        String line = null;
+        try {
+          BufferedReader reader = request.getReader();
+          while ((line = reader.readLine()) != null)
+            jb.append(line);
+        } catch (Exception e) { /*report an error*/ }
+
+        try {
+          JSONObject jsonObject =  new JSONObject(jb.toString());
+          if(jsonObject.getString("email").equals("dummy@admin.com") && jsonObject.getString("password").equals("123456")) {
+        	  request.getSession();
+        	  out.print(true);
+          }else out.print(false);
+        } catch (JSONException e) {
+          // crash and burn
+          throw new IOException("Error parsing JSON request string");
         }
-        closeAll();
     }
 
     private final void closeAll() {
