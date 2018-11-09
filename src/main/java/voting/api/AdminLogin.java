@@ -13,6 +13,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -50,7 +51,13 @@ public class AdminLogin extends HttpServlet {
         try {
           JSONObject jsonObject =  new JSONObject(jb.toString());
           if(jsonObject.getString("email").equals("dummy@admin.com") && jsonObject.getString("password").equals("123456")) {
-        	  request.getSession();
+        	  HttpSession oldSession = request.getSession(false);
+              if (oldSession != null) {
+                  oldSession.invalidate();
+              }
+              //generate a new session
+              HttpSession newSession = request.getSession(true);
+
         	  out.print(true);
           }else out.print(false);
         } catch (JSONException e) {
