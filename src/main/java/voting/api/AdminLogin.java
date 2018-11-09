@@ -47,7 +47,9 @@ public class AdminLogin extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace(out);
         }
-        out.close();
+        if (out != null) {
+            out.close();
+        }
     }
 
 }
