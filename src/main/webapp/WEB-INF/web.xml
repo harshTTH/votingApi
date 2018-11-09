@@ -21,7 +21,7 @@
 
     <servlet-mapping>
     	<servlet-name>AdminLogin</servlet-name>
-    	<url-pattern>/admin</url-pattern>
+    	<url-pattern>/adminLogin</url-pattern>
     </servlet-mapping>
 
 </web-app>
