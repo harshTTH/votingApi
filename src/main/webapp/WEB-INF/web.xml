@@ -28,28 +28,31 @@
         <servlet-name>AddNewPoll</servlet-name>
         <servlet-class>voting.api.AddNewPoll</servlet-class>
     </servlet>
+
     <servlet>
-    	<description>
-    	</description>
-    	<display-name>FetchPolls</display-name>
-    	<servlet-name>FetchPolls</servlet-name>
-    	<servlet-class>voting.api.FetchPolls</servlet-class>
+        <display-name>Fetch Polls</display-name>
+        <servlet-name>FetchPolls</servlet-name>
+        <servlet-class>voting.api.FetchPolls</servlet-class>
     </servlet>
 
     <servlet-mapping>
+        <servlet-name>AdminLogin</servlet-name>
         <url-pattern>/adminLogin</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
+        <servlet-name>AdminPanel</servlet-name>
         <url-pattern>/adminPanel</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
+        <servlet-name>AddNewPoll</servlet-name>
         <url-pattern>/adminPanel/addNewPoll</url-pattern>
     </servlet-mapping>
+
     <servlet-mapping>
-    	<servlet-name>FetchPolls</servlet-name>
-    	<url-pattern>/fetchPolls</url-pattern>
+        <servlet-name>FetchPolls</servlet-name>
+        <url-pattern>/fetchPolls</url-pattern>
     </servlet-mapping>
 
 </web-app>
