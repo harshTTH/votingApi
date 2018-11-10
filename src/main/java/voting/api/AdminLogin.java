@@ -25,13 +25,13 @@ public class AdminLogin extends HttpServlet {
             response.setContentType("text/html");
             response.setCharacterEncoding("UTF-8");
             out = response.getWriter();
-            StringBuffer jb = new StringBuffer();
+            StringBuffer data = new StringBuffer();
             String line = null;
             BufferedReader reader = request.getReader();
             while ((line = reader.readLine()) != null) {
-                jb.append(line);
+                data.append(line);
             }
-            JSONObject jsonObject = new JSONObject(jb.toString());
+            JSONObject jsonObject = new JSONObject(data.toString());
             if (jsonObject.getString("email").equals("dummy@admin.com")
                             && jsonObject.getString("password").equals("123456")) {
                 HttpSession session = request.getSession(false);
@@ -39,6 +39,9 @@ public class AdminLogin extends HttpServlet {
                     session.invalidate();
                 }
                 session = request.getSession(true);
+                // Added attributes on the session for admin account
+                session.setAttribute("email", "dummy@admin.com");
+                session.setAttribute("password", "123456");
                 out.print(true);
             } else {
                 out.print(false);
@@ -47,8 +50,12 @@ public class AdminLogin extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace(out);
         }
+        // Removed separate try - catch and just made a single one with Stack Trace being
+        // printed on the HTTP Response Writer, so in case we get something unexpected, we
+        // can see it there and take necessary action accordingly.
         if (out != null) {
             out.close();
+            out = null;
         }
     }
 

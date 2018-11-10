@@ -18,10 +18,32 @@
     	<servlet-name>AdminLogin</servlet-name>
     	<servlet-class>voting.api.AdminLogin</servlet-class>
     </servlet>
+    <servlet>
+    	<description>
+    	</description>
+    	<display-name>Admin Panel</display-name>
+    	<servlet-name>AdminPanel</servlet-name>
+    	<servlet-class>voting.api.AdminPanel</servlet-class>
+    </servlet>
+    <servlet>
+    	<description>
+    	</description>
+    	<display-name>Add New Poll</display-name>
+    	<servlet-name>AddNewPoll</servlet-name>
+    	<servlet-class>voting.api.AddNewPoll</servlet-class>
+    </servlet>
 
     <servlet-mapping>
-    	<servlet-name>AdminLogin</servlet-name>
+    	<servlet-name>Admin Login</servlet-name>
     	<url-pattern>/adminLogin</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+    	<servlet-name>Admin Panel</servlet-name>
+    	<url-pattern>/adminPanel</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+    	<servlet-name>Add New Poll</servlet-name>
+    	<url-pattern>/adminPanel/addNewPoll</url-pattern>
     </servlet-mapping>
 
 </web-app>
