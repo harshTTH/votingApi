@@ -30,14 +30,18 @@ public class AddNewPoll extends HttpServlet {
     // Makes it convenient to access DataBase with this Bundle kind of class
     private final class Data {
 
-        private String title, date, candidates, voters;
+        private String title, poll_date, candidates, voters, numCandidates, numVoters;
 
-        private Data(String title, String date, String candidates, String voters) throws Exception {
+        private Data(String title, String poll_date, String candidates, String voters, String numCandidates,
+                        String numVoters) throws Exception {
             this.title = title;
-            this.date = date;
+            this.poll_date = poll_date;
             this.candidates = candidates;
             this.voters = voters;
+            this.numCandidates = numCandidates;
+            this.numVoters = numVoters;
         }
+
     }
 
     // This function gets all data from JSON Object got from request (Front End)
@@ -49,17 +53,22 @@ public class AddNewPoll extends HttpServlet {
     // 'voters' is stored like "name1&phone1|name2&phone2"
     // (We'll have to do splits for rows and then for columns separately)
     private final Data getAllData(String rawData) throws Exception {
+
         JSONObject jsonObject = new JSONObject(rawData);
+
         String title = jsonObject.getString("title").toLowerCase();
-        String date = jsonObject.getString("date");
-        String[] dateMySQLFormat = date.split("/");
-        date = dateMySQLFormat[2] + '-' + dateMySQLFormat[0] + '-' + dateMySQLFormat[1];
+
+        String poll_date = jsonObject.getString("date");
+        String[] dateMySQLFormat = poll_date.split("/");
+        poll_date = dateMySQLFormat[2] + '-' + dateMySQLFormat[0] + '-' + dateMySQLFormat[1];
+
         JSONArray candidatesJsonArray = jsonObject.getJSONArray("candidates");
         String candidates = "";
         for (int i = 0; i < candidatesJsonArray.length(); i++) {
             candidates += candidatesJsonArray.getString(i) + '|';
         }
         candidates = candidates.substring(0, candidates.length() - 1);
+
         JSONArray votersJsonArray = jsonObject.getJSONArray("voters");
         String voters = "";
         for (int i = 0; i < votersJsonArray.length(); i++) {
@@ -72,7 +81,13 @@ public class AddNewPoll extends HttpServlet {
             voters += rowString + '|';
         }
         voters = voters.substring(0, voters.length() - 1);
-        return new Data(title, date, candidates, voters);
+
+        String numCandidates = "" + candidatesJsonArray.length();
+
+        String numVoters = "" + votersJsonArray.length();
+
+        return new Data(title, poll_date, candidates, voters, numCandidates, numVoters);
+
     }
 
     // This function will fill the database with the current poll's data
@@ -80,54 +95,113 @@ public class AddNewPoll extends HttpServlet {
     // 'polls(title(P), poll_date, candidates, voters, id_no(AUTO))' -> Keeps a track of all the polls
     // [Assigns a unique mapping ID to all the distinct polls]
     private final boolean fillDataBase(Data data) throws Exception {
+
         Connection conn = DriverManager.getConnection(DB, USER, PASS);
         Statement stmt = conn.createStatement();
+
         stmt.execute("create table if not exists polls(title varchar(32) primary key, "
-                        + "poll_date date, candidates text, voters text, id_no int auto_increment);");
+                        + "poll_date date, candidates text, voters text, numcandidates "
+                        + "int, numvoters int, id_no int auto_increment);");
+
         ResultSet res = stmt.executeQuery("select title from polls where title = '" + data.title + "';");
         res.last();
+
         if (res.getRow() == 1) {
             res.close();
             stmt.close();
             conn.close();
             return false;
         }
+
         res.close();
-        stmt.execute("insert into polls(title, poll_date, candidates, voters) values('" + data.title + "', '"
-                        + data.date + "', '" + data.candidates + "', '" + data.voters + "');");
+
+        stmt.execute("insert into polls(title, poll_date, candidates, voters, numcandidates, numvoters) values('"
+                        + data.title + "', '" + data.poll_date + "', '" + data.candidates + "', '" + data.voters + "', "
+                        + data.numCandidates + ", " + data.numVoters + ");");
+
+        res.close();
         stmt.close();
         conn.close();
+
         return true;
+
+    }
+
+    // Will give the title, date and id_no of all the polls as a JSONObject
+    // Remember, Date is in MySQL format
+    // (All information from the DB)
+    private final JSONObject accumulateAllData(Data data) throws Exception {
+
+        JSONObject jsonObject = new JSONObject();
+
+        Connection conn = DriverManager.getConnection(DB, USER, PASS);
+        Statement stmt = conn.createStatement();
+
+        ResultSet res = stmt.executeQuery("select title, poll_date, id_no from polls;");
+
+        while (res.next()) {
+
+            JSONObject tempObject = new JSONObject();
+
+            tempObject.append("title", res.getString("title"));
+            tempObject.append("poll_date", res.getString("poll_date"));
+            tempObject.append("id_no", res.getString("id_no"));
+
+            jsonObject.accumulate("all", tempObject);
+
+        }
+
+        conn.close();
+        stmt.close();
+        res.close();
+
+        return jsonObject;
+
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
                     throws ServletException, IOException {
         try {
-            response.setContentType("text/html");
+
+            response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             out = response.getWriter();
+
             StringBuffer data = new StringBuffer();
             String line = null;
             BufferedReader reader = request.getReader();
+
             while ((line = reader.readLine()) != null) {
                 data.append(line);
             }
+
             // Data must be come in this way from front end:
             // title: "name" -> The title of polls
             // candidates: ["name1", "name2"] -> Array of candidates
             // date: "mm/dd/yyyy" -> The polling date
             // voters: [["name1", "phone1"], ["name2", "phone2"]] -> 2-D Array of Names and Phone Numbers of Voters
+
             Data pollData = getAllData(data.toString());
-            out.print(fillDataBase(pollData));
+
+            if (fillDataBase(pollData)) {
+                out.print(accumulateAllData(pollData));
+            } else {
+                JSONObject emptyJsonObject = new JSONObject();
+                out.print(emptyJsonObject);
+            }
+
             reader.close();
+
         } catch (Exception e) {
             e.printStackTrace(out);
         }
+
         if (out != null) {
             out.close();
             out = null;
         }
+
     }
 
 }
