@@ -73,6 +73,7 @@ public class AdminLogin extends HttpServlet {
         // Removed separate try - catch and just made a single one with Stack Trace being
         // printed on the HTTP Response Writer, so in case we get something unexpected, we
         // can see it there and take necessary action accordingly.
+        // [Done this in all of the project]
 
         if (out != null) {
             out.close();

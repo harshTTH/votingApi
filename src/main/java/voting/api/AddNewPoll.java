@@ -46,8 +46,8 @@ public class AddNewPoll extends HttpServlet {
 
     // This function gets all data from JSON Object got from request (Front End)
     // 'title' is just a String, converted it to all lower case
-    // 'date' is a String in 'mm/dd/yyyy' format, I changed it to proper MySQL format
-    // [Just have one doubt here about the date that front end gives (the exact format, just check once)]
+    // 'poll_date' is a String in 'mm/dd/yyyy' format, I changed it to proper MySQL format
+    // [Just have one doubt here about the poll_date that front end gives (the exact format, just check once)]
     // 'candidates' is a String Array, stored like "name1|name2" (We can split it later to retrieve data)
     // 'voters' is a 2-D String Array, each row contains exactly two columns (Name and Phone Number)
     // 'voters' is stored like "name1&phone1|name2&phone2"
@@ -92,7 +92,8 @@ public class AddNewPoll extends HttpServlet {
 
     // This function will fill the database with the current poll's data
     // Table:
-    // 'polls(title(P), poll_date, candidates, voters, id_no(AUTO))' -> Keeps a track of all the polls
+    // 'polls(title(P), poll_date, candidates, voters, numcandidates, numvoters, id_no(AUTO))'
+    // [Keeps a track of all the polls]
     // [Assigns a unique mapping ID to all the distinct polls]
     private final boolean fillDataBase(Data data) throws Exception {
 
@@ -127,8 +128,8 @@ public class AddNewPoll extends HttpServlet {
 
     }
 
-    // Will give the title, date and id_no of all the polls as a JSONObject
-    // Remember, Date is in MySQL format
+    // Will give the title, poll_date and id_no of all the polls as a JSONObject
+    // Remember, poll_date is in MySQL format
     // (All information from the DB)
     private final JSONObject accumulateAllData(Data data) throws Exception {
 
@@ -179,7 +180,7 @@ public class AddNewPoll extends HttpServlet {
             // Data must be come in this way from front end:
             // title: "name" -> The title of polls
             // candidates: ["name1", "name2"] -> Array of candidates
-            // date: "mm/dd/yyyy" -> The polling date
+            // poll_date: "mm/dd/yyyy" -> The polling date
             // voters: [["name1", "phone1"], ["name2", "phone2"]] -> 2-D Array of Names and Phone Numbers of Voters
 
             Data pollData = getAllData(data.toString());
