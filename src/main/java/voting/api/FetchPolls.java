@@ -30,6 +30,8 @@ public class FetchPolls extends HttpServlet {
 
         JSONObject jsonObject = new JSONObject();
 
+        Class.forName("com.mysql.jdbc.Driver");
+
         Connection conn = DriverManager.getConnection(DB, USER, PASS);
         Statement stmt = conn.createStatement();
 
@@ -55,7 +57,7 @@ public class FetchPolls extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
                     throws ServletException, IOException {
 
         try {

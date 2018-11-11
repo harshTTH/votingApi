@@ -46,8 +46,7 @@ public class AddNewPoll extends HttpServlet {
 
     // This function gets all data from JSON Object got from request (Front End)
     // 'title' is just a String, converted it to all lower case
-    // 'poll_date' is a String in 'mm/dd/yyyy' format, I changed it to proper MySQL format
-    // [Just have one doubt here about the poll_date that front end gives (the exact format, just check once)]
+    // 'poll_date' is a String in 'yyyy-mm-dd' in MySQL format
     // 'candidates' is a String Array, stored like "name1|name2" (We can split it later to retrieve data)
     // 'voters' is a 2-D String Array, each row contains exactly two columns (Name and Phone Number)
     // 'voters' is stored like "name1&phone1|name2&phone2"
@@ -59,8 +58,6 @@ public class AddNewPoll extends HttpServlet {
         String title = jsonObject.getString("title").toLowerCase();
 
         String poll_date = jsonObject.getString("date");
-        String[] dateMySQLFormat = poll_date.split("/");
-        poll_date = dateMySQLFormat[2] + '-' + dateMySQLFormat[0] + '-' + dateMySQLFormat[1];
 
         JSONArray candidatesJsonArray = jsonObject.getJSONArray("candidates");
         String candidates = "";
@@ -97,12 +94,14 @@ public class AddNewPoll extends HttpServlet {
     // [Assigns a unique mapping ID to all the distinct polls]
     private final boolean fillDataBase(Data data) throws Exception {
 
+        Class.forName("com.mysql.jdbc.Driver");
+
         Connection conn = DriverManager.getConnection(DB, USER, PASS);
         Statement stmt = conn.createStatement();
 
-        stmt.execute("create table if not exists polls(title varchar(32) primary key, "
-                        + "poll_date date, candidates text, voters text, numcandidates "
-                        + "int, numvoters int, id_no int auto_increment);");
+        stmt.execute("create table if not exists polls(title varchar(64), poll_date date, "
+                        + "candidates text, voters text, numcandidates int, numvoters int, "
+                        + "id_no int primary key auto_increment, unique(title));");
 
         ResultSet res = stmt.executeQuery("select title from polls where title = '" + data.title + "';");
         res.last();
@@ -129,11 +128,12 @@ public class AddNewPoll extends HttpServlet {
     }
 
     // Will give the title, poll_date and id_no of all the polls as a JSONObject
-    // Remember, poll_date is in MySQL format
     // (All information from the DB)
     private final JSONObject accumulateAllData(Data data) throws Exception {
 
         JSONObject jsonObject = new JSONObject();
+
+        Class.forName("com.mysql.jdbc.Driver");
 
         Connection conn = DriverManager.getConnection(DB, USER, PASS);
         Statement stmt = conn.createStatement();
@@ -180,7 +180,7 @@ public class AddNewPoll extends HttpServlet {
             // Data must be come in this way from front end:
             // title: "name" -> The title of polls
             // candidates: ["name1", "name2"] -> Array of candidates
-            // poll_date: "mm/dd/yyyy" -> The polling date
+            // poll_date: "yyyy-mm-dd" -> The polling date (MySQL format)
             // voters: [["name1", "phone1"], ["name2", "phone2"]] -> 2-D Array of Names and Phone Numbers of Voters
 
             Data pollData = getAllData(data.toString());
