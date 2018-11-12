@@ -55,7 +55,7 @@ public class AdminLogin extends HttpServlet {
                 // I'm not sure about this, but just gave a try to set the path as you asked
                 if (response.containsHeader("SET-COOKIE")) {
                     String sessionID = session.getId();
-                    response.setHeader("SET-COOKIE", "JSESSIONID=" + sessionID + ";Path=/adminPanel;");
+                    response.setHeader("SET-COOKIE", "JSESSIONID=" + sessionID + ";Path=/;");
                 }
 
                 out.print(true);
