@@ -92,7 +92,7 @@ public class AddNewPoll extends HttpServlet {
     // 'polls(title(P), poll_date, candidates, voters, numcandidates, numvoters, id_no(AUTO))'
     // [Keeps a track of all the polls]
     // [Assigns a unique mapping ID to all the distinct polls]
-    private final boolean fillDataBase(Data data) throws Exception {
+    private final void fillDataBase(Data data) throws Exception {
 
         Class.forName("com.mysql.jdbc.Driver");
 
@@ -110,7 +110,7 @@ public class AddNewPoll extends HttpServlet {
             res.close();
             stmt.close();
             conn.close();
-            return false;
+            return;
         }
 
         res.close();
@@ -123,13 +123,11 @@ public class AddNewPoll extends HttpServlet {
         stmt.close();
         conn.close();
 
-        return true;
-
     }
 
     // Will give the title, poll_date and id_no of all the polls as a JSONObject
     // (All information from the DB)
-    private final JSONObject accumulateAllData(Data data) throws Exception {
+    private final JSONObject accumulateAllData() throws Exception {
 
         JSONObject jsonObject = new JSONObject();
 
@@ -183,14 +181,16 @@ public class AddNewPoll extends HttpServlet {
             // poll_date: "yyyy-mm-dd" -> The polling date (MySQL format)
             // voters: [["name1", "phone1"], ["name2", "phone2"]] -> 2-D Array of Names and Phone Numbers of Voters
 
-            Data pollData = getAllData(data.toString());
+            String rawData = new String(data.toString());
 
-            if (fillDataBase(pollData)) {
-                out.print(accumulateAllData(pollData));
-            } else {
-                JSONObject emptyJsonObject = new JSONObject();
-                out.print(emptyJsonObject);
+            // Adding a new poll to DataBase, if got JSON request from front end
+            if (rawData.length() > 0) {
+                Data pollData = getAllData(rawData);
+                fillDataBase(pollData);
             }
+
+            // Any which ways we are returning all of the polls currently in DataBase to front end
+            out.print(accumulateAllData());
 
             reader.close();
 
