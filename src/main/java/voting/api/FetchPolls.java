@@ -66,14 +66,9 @@ public class FetchPolls extends HttpServlet {
             response.setCharacterEncoding("UTF-8");
             out = response.getWriter();
 
-            JSONObject jsonObject = null;
-
-            if ((jsonObject = getTodaysPolls()) != null) {
-                out.print(jsonObject);
-            } else {
-                JSONObject emptyJsonObject = new JSONObject();
-                out.print(emptyJsonObject);
-            }
+            // Possibly empty set
+            JSONObject jsonObject = getTodaysPolls();
+            out.print(jsonObject);
 
         } catch (Exception e) {
             e.printStackTrace(out);

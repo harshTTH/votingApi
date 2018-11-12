@@ -119,7 +119,6 @@ public class AddNewPoll extends HttpServlet {
                         + data.title + "', '" + data.poll_date + "', '" + data.candidates + "', '" + data.voters + "', "
                         + data.numCandidates + ", " + data.numVoters + ");");
 
-        res.close();
         stmt.close();
         conn.close();
 
@@ -150,9 +149,9 @@ public class AddNewPoll extends HttpServlet {
 
         }
 
-        conn.close();
-        stmt.close();
         res.close();
+        stmt.close();
+        conn.close();
 
         return jsonObject;
 
@@ -189,7 +188,8 @@ public class AddNewPoll extends HttpServlet {
                 fillDataBase(pollData);
             }
 
-            // Any which ways we are returning all of the polls currently in DataBase to front end
+            // Any which ways we are returning all of the polls currently
+            // in DataBase to front end (possibly empty set)
             out.print(accumulateAllData());
 
             reader.close();

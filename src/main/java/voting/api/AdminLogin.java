@@ -52,7 +52,7 @@ public class AdminLogin extends HttpServlet {
                 // Added attribute on the session for admin account
                 session.setAttribute("email", "dummy@admin.com");
 
-                // I'm not sure about this, but just gave a try to set the path as you asked
+                // Setting root path for just created session cookie
                 if (response.containsHeader("SET-COOKIE")) {
                     String sessionID = session.getId();
                     response.setHeader("SET-COOKIE", "JSESSIONID=" + sessionID + ";Path=/;");
