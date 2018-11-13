@@ -16,69 +16,79 @@ import org.json.JSONObject;
 
 public class FetchPolls extends HttpServlet {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    private static final String DB = "jdbc:mysql://us-cdbr-gcp-east-01.cleardb.net/gcp_d3a947905984c5db5bb5";
-    private static final String USER = "b4285c8592ce72";
-    private static final String PASS = "a3ca3bab";
+	private static final String DB = "jdbc:mysql://us-cdbr-gcp-east-01.cleardb.net/gcp_d3a947905984c5db5bb5";
+	private static final String USER = "b4285c8592ce72";
+	private static final String PASS = "a3ca3bab";
 
-    private static PrintWriter out = null;
+	private static PrintWriter out = null;
 
-    // Will give 'title' and 'id_no' of today's polls as a JSON Object
-    // containing a JSONArray
-    private final JSONObject getTodaysPolls() throws Exception {
+	// Will give 'title' and 'id_no' of today's polls as a JSON Object
+	// containing a JSONArray
+	private final JSONObject getTodaysPolls() throws Exception {
 
-        JSONObject jsonObject = new JSONObject();
+		JSONObject jsonObject = new JSONObject();
 
-        Class.forName("com.mysql.jdbc.Driver");
+		Class.forName("com.mysql.jdbc.Driver");
 
-        Connection conn = DriverManager.getConnection(DB, USER, PASS);
-        Statement stmt = conn.createStatement();
+		Connection conn = DriverManager.getConnection(DB, USER, PASS);
+		Statement stmt = conn.createStatement();
 
-        ResultSet res = stmt.executeQuery("select title, id_no from polls where poll_date = curdate();");
+		String query = "SELECT POLLS FROM INFORMATION_SCHEMA WHERE 1;"; // to check whether table exists or not
+		ResultSet tableRes = stmt.executeQuery(query);
+		tableRes.last();
+		if (tableRes.getRow() == 1) {
+			tableRes.close();
+			stmt.close();
+			conn.close();
+			return new JSONObject();
+		}
 
-        while (res.next()) {
+		ResultSet res = stmt.executeQuery("select title, id_no from polls where poll_date = curdate();");
 
-            JSONObject tempObject = new JSONObject();
+		while (res.next()) {
 
-            tempObject.append("title", res.getString("title"));
-            tempObject.append("id_no", res.getString("id_no"));
+			JSONObject tempObject = new JSONObject();
 
-            jsonObject.accumulate("all", tempObject);
+			tempObject.append("title", res.getString("title"));
+			tempObject.append("id_no", res.getString("id_no"));
 
-        }
+			jsonObject.accumulate("all", tempObject);
 
-        res.close();
-        stmt.close();
-        conn.close();
+		}
 
-        return jsonObject;
+		res.close();
+		stmt.close();
+		conn.close();
 
-    }
+		return jsonObject;
 
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-                    throws ServletException, IOException {
+	}
 
-        try {
+	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            out = response.getWriter();
+		try {
 
-            // Possibly empty set
-            JSONObject jsonObject = getTodaysPolls();
-            out.print(jsonObject);
+			response.setContentType("application/json");
+			response.setCharacterEncoding("UTF-8");
+			out = response.getWriter();
 
-        } catch (Exception e) {
-            e.printStackTrace(out);
-        }
+			// Possibly empty set
+			JSONObject jsonObject = getTodaysPolls();
+			out.print(jsonObject);
 
-        if (out != null) {
-            out.close();
-            out = null;
-        }
+		} catch (Exception e) {
+			e.printStackTrace(out);
+		}
 
-    }
+		if (out != null) {
+			out.close();
+			out = null;
+		}
+
+	}
 
 }

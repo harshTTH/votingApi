@@ -3,6 +3,8 @@ package voting.api;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -10,10 +12,40 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.java_websocket.WebSocket;
+import org.java_websocket.handshake.ClientHandshake;
+import org.java_websocket.server.WebSocketServer;
 import org.json.JSONObject;
 
-public class AdminLogin extends HttpServlet {
 
+public class AdminLogin extends HttpServlet {
+	private class pseudoServer extends WebSocketServer{
+		public  pseudoServer(int port)throws UnknownHostException{
+			super(new InetSocketAddress(port));
+			System.out.println("connections successfull");
+		}
+
+		@Override
+		public void onOpen(WebSocket conn, ClientHandshake handshake) {
+			
+		}
+
+		@Override
+		public void onClose(WebSocket conn, int code, String reason, boolean remote) {
+			
+		}
+
+		@Override
+		public void onMessage(WebSocket conn, String message) {
+			
+		}
+
+		@Override
+		public void onError(WebSocket conn, Exception ex) {
+			
+		}
+		
+	}
     private static final long serialVersionUID = 1L;
 
     private static PrintWriter out = null;
