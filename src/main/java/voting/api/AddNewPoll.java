@@ -92,14 +92,14 @@ public class AddNewPoll extends HttpServlet {
     // 'polls(title(P), poll_date, candidates, voters, numcandidates, numvoters, id_no(AUTO))'
     // [Keeps a track of all the polls]
     // [Assigns a unique mapping ID to all the distinct polls]
-    private final void fillDataBase(Data data) throws Exception {
-
+    private final boolean fillDataBase(Data data) throws Exception {
+    
         Class.forName("com.mysql.jdbc.Driver");
 
         Connection conn = DriverManager.getConnection(DB, USER, PASS);
         Statement stmt = conn.createStatement();
 
-        stmt.execute("create table if not exists polls(title varchar(64), poll_date date, "
+        stmt.execute("create table if not exist/s polls(title varchar(64), poll_date date, "
                         + "candidates text, voters text, numcandidates int, numvoters int, "
                         + "id_no int primary key auto_increment, unique(title));");
 
@@ -110,7 +110,7 @@ public class AddNewPoll extends HttpServlet {
             res.close();
             stmt.close();
             conn.close();
-            return;
+            return false; // if title already exists 
         }
 
         res.close();
@@ -121,7 +121,7 @@ public class AddNewPoll extends HttpServlet {
 
         stmt.close();
         conn.close();
-
+        return true; // if title doesn't exists
     }
 
     // Will give the title, poll_date and id_no of all the polls as a JSONObject
@@ -185,7 +185,7 @@ public class AddNewPoll extends HttpServlet {
             // Adding a new poll to DataBase, if got JSON request from front end
             if (rawData.length() > 0) {
                 Data pollData = getAllData(rawData);
-                fillDataBase(pollData);
+                out.println(fillDataBase(pollData));
             }
 
             // Any which ways we are returning all of the polls currently
