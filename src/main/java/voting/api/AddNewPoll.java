@@ -93,7 +93,7 @@ public class AddNewPoll extends HttpServlet {
     // [Keeps a track of all the polls]
     // [Assigns a unique mapping ID to all the distinct polls]
     private final boolean fillDataBase(Data data) throws Exception {
-    
+
         Class.forName("com.mysql.jdbc.Driver");
 
         Connection conn = DriverManager.getConnection(DB, USER, PASS);
@@ -104,13 +104,14 @@ public class AddNewPoll extends HttpServlet {
                         + "id_no int primary key auto_increment, unique(title));");
 
         ResultSet res = stmt.executeQuery("select title from polls where title = '" + data.title + "';");
+
         res.last();
 
         if (res.getRow() == 1) {
             res.close();
             stmt.close();
             conn.close();
-            return false; // if title already exists 
+            return false;
         }
 
         res.close();
@@ -121,7 +122,9 @@ public class AddNewPoll extends HttpServlet {
 
         stmt.close();
         conn.close();
-        return true; // if title doesn't exists
+
+        return true;
+
     }
 
     // Will give the title, poll_date and id_no of all the polls as a JSONObject
@@ -134,6 +137,10 @@ public class AddNewPoll extends HttpServlet {
 
         Connection conn = DriverManager.getConnection(DB, USER, PASS);
         Statement stmt = conn.createStatement();
+
+        stmt.execute("create table if not exist/s polls(title varchar(64), poll_date date, "
+                        + "candidates text, voters text, numcandidates int, numvoters int, "
+                        + "id_no int primary key auto_increment, unique(title));");
 
         ResultSet res = stmt.executeQuery("select title, poll_date, id_no from polls;");
 
@@ -162,10 +169,6 @@ public class AddNewPoll extends HttpServlet {
                     throws ServletException, IOException {
         try {
 
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            out = response.getWriter();
-
             StringBuffer data = new StringBuffer();
             String line = null;
             BufferedReader reader = request.getReader();
@@ -183,14 +186,36 @@ public class AddNewPoll extends HttpServlet {
             String rawData = new String(data.toString());
 
             // Adding a new poll to DataBase, if got JSON request from front end
+            // If poll exists, returning error signal (false)
+            // Else (even if no request from front end), printing all data
+
+            String contentType;
+
+            boolean valid;
+
             if (rawData.length() > 0) {
                 Data pollData = getAllData(rawData);
-                out.println(fillDataBase(pollData));
+                if (fillDataBase(pollData)) {
+                    contentType = "application/json";
+                    valid = true;
+                } else {
+                    contentType = "text/html";
+                    valid = false;
+                }
+            } else {
+                contentType = "application/json";
+                valid = true;
             }
 
-            // Any which ways we are returning all of the polls currently
-            // in DataBase to front end (possibly empty set)
-            out.print(accumulateAllData());
+            response.setContentType(contentType);
+            response.setCharacterEncoding("UTF-8");
+            out = response.getWriter();
+
+            if (valid) {
+                out.print(accumulateAllData());
+            } else {
+                out.print(valid);
+            }
 
             reader.close();
 

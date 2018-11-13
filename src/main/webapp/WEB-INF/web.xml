@@ -6,6 +6,7 @@
     version="2.4">
 
     <display-name>Voting API</display-name>
+
     <description>
         This is a simple web application with a source code organization
         based on the recommendations of the Application Developer's Guide.

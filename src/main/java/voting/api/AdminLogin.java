@@ -17,35 +17,36 @@ import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 import org.json.JSONObject;
 
-
 public class AdminLogin extends HttpServlet {
-	private class pseudoServer extends WebSocketServer{
-		public  pseudoServer(int port)throws UnknownHostException{
-			super(new InetSocketAddress(port));
-			System.out.println("connections successfull");
-		}
 
-		@Override
-		public void onOpen(WebSocket conn, ClientHandshake handshake) {
-			
-		}
+    // This annotation is added for the time being just to remove that
+    // irritating yellow warning line
+    @SuppressWarnings("unused")
+    private final class PseudoServer extends WebSocketServer {
 
-		@Override
-		public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-			
-		}
+        private PseudoServer(int port) throws UnknownHostException {
+            super(new InetSocketAddress(port));
+            // Successful Connection
+        }
 
-		@Override
-		public void onMessage(WebSocket conn, String message) {
-			
-		}
+        @Override
+        public void onOpen(WebSocket conn, ClientHandshake handshake) {
+        }
 
-		@Override
-		public void onError(WebSocket conn, Exception ex) {
-			
-		}
-		
-	}
+        @Override
+        public void onClose(WebSocket conn, int code, String reason, boolean remote) {
+        }
+
+        @Override
+        public void onMessage(WebSocket conn, String message) {
+        }
+
+        @Override
+        public void onError(WebSocket conn, Exception e) {
+        }
+
+    }
+
     private static final long serialVersionUID = 1L;
 
     private static PrintWriter out = null;
