@@ -19,30 +19,11 @@ import org.json.JSONObject;
 public class AddNewPoll extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
-
     private static final String DB = "jdbc:mysql://us-cdbr-gcp-east-01.cleardb.net/gcp_d3a947905984c5db5bb5";
     private static final String USER = "b4285c8592ce72";
     private static final String PASS = "a3ca3bab";
 
     private static PrintWriter out = null;
-
-    // A Bundle class to group all of polling data
-    // Makes it convenient to access DataBase with this Bundle kind of class
-    private final class Data {
-
-        private String title, poll_date, candidates, voters, numCandidates, numVoters;
-
-        private Data(String title, String poll_date, String candidates, String voters, String numCandidates,
-                        String numVoters) throws Exception {
-            this.title = title;
-            this.poll_date = poll_date;
-            this.candidates = candidates;
-            this.voters = voters;
-            this.numCandidates = numCandidates;
-            this.numVoters = numVoters;
-        }
-
-    }
 
     // This function gets all data from JSON Object got from request (Front End)
     // 'title' is just a String, converted it to all lower case
@@ -62,26 +43,26 @@ public class AddNewPoll extends HttpServlet {
         String poll_date = jsonObject.getString("date");
 
         JSONArray candidatesJsonArray = jsonObject.getJSONArray("candidates");
-        String candidates = "";
+        StringBuffer candidateBuffer = new StringBuffer();
         for (int i = 0; i < candidatesJsonArray.length(); i++) {
-            String str = candidatesJsonArray.getString(i);
-            str = str.replace(" ", "_");
-            candidates += str + '|';
+            String str = candidatesJsonArray.getString(i).replace(' ', '_');
+            candidateBuffer.append(str);
+            candidateBuffer.append('|');
         }
-        candidates = candidates.substring(0, candidates.length() - 1);
+        String candidates = candidateBuffer.substring(0, candidateBuffer.length() - 1);
 
         JSONArray votersJsonArray = jsonObject.getJSONArray("voters");
-        String voters = "";
+        StringBuffer votersBuffer = new StringBuffer();
         for (int i = 0; i < votersJsonArray.length(); i++) {
             JSONArray row = votersJsonArray.getJSONArray(i);
-            String rowString = "";
-            for (int j = 0; j < row.length(); j++) {
-                rowString += row.getString(j) + '&';
-            }
-            rowString = rowString.substring(0, rowString.length() - 1);
-            voters += rowString + '|';
+            StringBuffer rowBuffer = new StringBuffer();
+            rowBuffer.append(row.getString(0).replace(' ', '_'));
+            rowBuffer.append('&');
+            rowBuffer.append(row.getString(1));
+            rowBuffer.append('|');
+            votersBuffer.append(rowBuffer);
         }
-        voters = voters.substring(0, voters.length() - 1);
+        String voters = votersBuffer.substring(0, votersBuffer.length() - 1);
 
         String numCandidates = "" + candidatesJsonArray.length();
 
@@ -119,26 +100,33 @@ public class AddNewPoll extends HttpServlet {
             return false;
         }
 
-        // this block of code creates a unique polling table for each new poll
-        {
-            StringBuilder pollTableQuery = new StringBuilder();
-            pollTableQuery.append("create table `" + data.title + "` (");
-            String[] candidates = data.candidates.split("|");
-            int temp = 0;
-            while (temp != Integer.parseInt(data.numCandidates)) {
-                pollTableQuery.append(candidates[temp] + " int,");
-                temp++;
-            }
-            pollTableQuery.deleteCharAt(pollTableQuery.length() - 1);
-            pollTableQuery.append(");");
-            String pollTableFinalQuery = pollTableQuery.toString();
-            stmt.execute(pollTableFinalQuery);
-        }
-
         res.close();
         stmt.execute("insert into polls(title, poll_date, candidates, voters, numcandidates, numvoters) values('"
                         + data.title + "', '" + data.poll_date + "', '" + data.candidates + "', '" + data.voters + "', "
                         + data.numCandidates + ", " + data.numVoters + ");");
+
+        // This block of code creates a unique polling table for each new poll
+        // StringBuffer is Thread Safe, StringBuilder is not, functionality is same
+        // So, I changed it, rest all was okay
+        // Except the way Mohit created the tables, it would have given some serious SQL Exceptions
+        res = stmt.executeQuery("select id_no from polls where title = '" + data.title + "';");
+        res.next();
+        String poll_id = res.getString("id_no");
+        res.close();
+
+        StringBuffer pollTableQuery = new StringBuffer();
+        pollTableQuery.append("create table `" + poll_id + "` (");
+        String[] candidates = data.candidates.split("|");
+
+        for (String s : candidates) {
+            pollTableQuery.append("`" + s + "` int default 0, ");
+        }
+
+        pollTableQuery.deleteCharAt(pollTableQuery.length() - 1);
+        pollTableQuery.deleteCharAt(pollTableQuery.length() - 1);
+        pollTableQuery.append(");");
+        String pollTableFinalQuery = pollTableQuery.toString();
+        stmt.execute(pollTableFinalQuery);
 
         stmt.close();
         conn.close();
@@ -168,11 +156,11 @@ public class AddNewPoll extends HttpServlet {
 
             JSONObject tempObject = new JSONObject();
 
-            tempObject.append("title", res.getString("title"));
-            tempObject.append("poll_date", res.getString("poll_date"));
-            tempObject.append("id_no", res.getString("id_no"));
+            tempObject.put("title", res.getString("title"));
+            tempObject.put("poll_date", res.getString("poll_date"));
+            tempObject.put("id_no", res.getString("id_no"));
 
-            jsonObject.accumulate("all", tempObject);
+            jsonObject.append("all", tempObject);
 
         }
 
@@ -211,7 +199,6 @@ public class AddNewPoll extends HttpServlet {
             // Else (even if no request from front end), printing all data
 
             String contentType;
-
             boolean valid;
 
             if (rawData.length() > 0) {

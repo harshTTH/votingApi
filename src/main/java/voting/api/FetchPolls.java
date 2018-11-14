@@ -17,7 +17,6 @@ import org.json.JSONObject;
 public class FetchPolls extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
-
     private static final String DB = "jdbc:mysql://us-cdbr-gcp-east-01.cleardb.net/gcp_d3a947905984c5db5bb5";
     private static final String USER = "b4285c8592ce72";
     private static final String PASS = "a3ca3bab";
@@ -45,10 +44,10 @@ public class FetchPolls extends HttpServlet {
 
             JSONObject tempObject = new JSONObject();
 
-            tempObject.append("title", res.getString("title"));
-            tempObject.append("id_no", res.getString("id_no"));
+            tempObject.put("title", res.getString("title"));
+            tempObject.put("id_no", res.getString("id_no"));
 
-            jsonObject.accumulate("all", tempObject);
+            jsonObject.append("all", tempObject);
 
         }
 
