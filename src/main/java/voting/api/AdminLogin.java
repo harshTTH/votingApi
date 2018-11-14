@@ -1,11 +1,8 @@
 package voting.api;
 
 import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.ServerSocket;
-import java.net.Socket;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -17,17 +14,9 @@ import org.json.JSONObject;
 
 public class AdminLogin extends HttpServlet {
 
-    // This annotation is added for the time being just to remove that
-    // irritating yellow warning line
-
     private static final long serialVersionUID = 1L;
 
     private static PrintWriter out = null;
-
-    private static int port = 9999;
-    private static ServerSocket sSocket = null;
-    private static Socket socket = null;
-    private DataInputStream in = null;
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -68,10 +57,6 @@ public class AdminLogin extends HttpServlet {
                     String sessionID = session.getId();
                     response.setHeader("SET-COOKIE", "JSESSIONID=" + sessionID + ";Path=/;");
                 }
-
-                sSocket = new ServerSocket(port);
-                socket = sSocket.accept();
-                in = new DataInputStream(socket.getInputStream());
 
                 out.print(true);
 

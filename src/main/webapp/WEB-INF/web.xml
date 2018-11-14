@@ -35,12 +35,11 @@
         <servlet-name>FetchPolls</servlet-name>
         <servlet-class>voting.api.FetchPolls</servlet-class>
     </servlet>
+
     <servlet>
-    	<description>
-    	</description>
-    	<display-name>VerifyVoter</display-name>
-    	<servlet-name>VerifyVoter</servlet-name>
-    	<servlet-class>voting.api.VerifyVoter</servlet-class>
+        <display-name>VerifyVoter</display-name>
+        <servlet-name>VerifyVoter</servlet-name>
+        <servlet-class>voting.api.VerifyVoter</servlet-class>
     </servlet>
 
     <servlet-mapping>
@@ -62,9 +61,10 @@
         <servlet-name>FetchPolls</servlet-name>
         <url-pattern>/fetchPolls</url-pattern>
     </servlet-mapping>
+
     <servlet-mapping>
-    	<servlet-name>VerifyVoter</servlet-name>
-    	<url-pattern>/verifyVoter</url-pattern>
+        <servlet-name>VerifyVoter</servlet-name>
+        <url-pattern>/verifyVoter</url-pattern>
     </servlet-mapping>
 
 </web-app>
