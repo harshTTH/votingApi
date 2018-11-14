@@ -1,10 +1,11 @@
 package voting.api;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -12,44 +13,21 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.java_websocket.WebSocket;
-import org.java_websocket.handshake.ClientHandshake;
-import org.java_websocket.server.WebSocketServer;
 import org.json.JSONObject;
 
 public class AdminLogin extends HttpServlet {
 
     // This annotation is added for the time being just to remove that
     // irritating yellow warning line
-    @SuppressWarnings("unused")
-    private final class PseudoServer extends WebSocketServer {
-
-        private PseudoServer(int port) throws UnknownHostException {
-            super(new InetSocketAddress(port));
-            // Successful Connection
-        }
-
-        @Override
-        public void onOpen(WebSocket conn, ClientHandshake handshake) {
-        }
-
-        @Override
-        public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-        }
-
-        @Override
-        public void onMessage(WebSocket conn, String message) {
-        }
-
-        @Override
-        public void onError(WebSocket conn, Exception e) {
-        }
-
-    }
 
     private static final long serialVersionUID = 1L;
 
     private static PrintWriter out = null;
+
+    private static int port = 9999;
+    private static ServerSocket sSocket = null;
+    private static Socket socket = null;
+    private DataInputStream in = null;
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -90,6 +68,10 @@ public class AdminLogin extends HttpServlet {
                     String sessionID = session.getId();
                     response.setHeader("SET-COOKIE", "JSESSIONID=" + sessionID + ";Path=/;");
                 }
+
+                sSocket = new ServerSocket(port);
+                socket = sSocket.accept();
+                in = new DataInputStream(socket.getInputStream());
 
                 out.print(true);
 
