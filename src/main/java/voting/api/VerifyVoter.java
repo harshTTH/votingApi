@@ -30,7 +30,6 @@ public class VerifyVoter extends HttpServlet {
 
         String poll_id = jsonObject.getString("poll_id");
         String number = jsonObject.getString("number");
-        String voter_id = poll_id + number;
         String checkerString = poll_id + '&' + number;
 
         Class.forName("com.mysql.jdbc.Driver");
@@ -40,7 +39,7 @@ public class VerifyVoter extends HttpServlet {
 
         stmt.execute("create table if not exists voters (voter_id varchar(64) primary key);");
 
-        ResultSet res = stmt.executeQuery("select voter_id from voters where voter_id = '" + voter_id + "';");
+        ResultSet res = stmt.executeQuery("select voter_id from voters where voter_id = '" + checkerString + "';");
         res.last();
 
         if (res.getRow() == 1) {
@@ -50,7 +49,7 @@ public class VerifyVoter extends HttpServlet {
         res.close();
         res = stmt.executeQuery("select voters from polls where id_no = " + poll_id + ";");
         res.last();
-        if (res.getRow() == 1) {
+        if (res.getRow() == 0) {
             return false;
         }
 
