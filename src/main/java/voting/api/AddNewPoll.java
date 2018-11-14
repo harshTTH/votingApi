@@ -158,7 +158,7 @@ public class AddNewPoll extends HttpServlet {
         Connection conn = DriverManager.getConnection(DB, USER, PASS);
         Statement stmt = conn.createStatement();
 
-        stmt.execute("create table if not exist/s polls(title varchar(64), poll_date date, "
+        stmt.execute("create table if not exists polls(title varchar(64), poll_date date, "
                         + "candidates text, voters text, numcandidates int, numvoters int, "
                         + "id_no int primary key auto_increment, unique(title));");
 
