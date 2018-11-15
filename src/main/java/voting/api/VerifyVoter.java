@@ -55,7 +55,8 @@ public class VerifyVoter extends HttpServlet {
 
         String[] voterList = res.getString("voters").split("|");
         for (String s : voterList) {
-            if (s.equals(checkerString)) {
+            String[] row = s.split("&");
+            if (row[1].equals(number)) {
                 return true;
             }
         }

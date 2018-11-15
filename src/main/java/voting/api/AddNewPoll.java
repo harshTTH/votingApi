@@ -56,7 +56,7 @@ public class AddNewPoll extends HttpServlet {
         for (int i = 0; i < votersJsonArray.length(); i++) {
             JSONArray row = votersJsonArray.getJSONArray(i);
             StringBuffer rowBuffer = new StringBuffer();
-            rowBuffer.append(row.getString(0).replace(' ', '_'));
+            rowBuffer.append(row.getString(0));
             rowBuffer.append('&');
             rowBuffer.append(row.getString(1));
             rowBuffer.append('|');
