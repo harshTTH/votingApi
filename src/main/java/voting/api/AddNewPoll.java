@@ -116,7 +116,7 @@ public class AddNewPoll extends HttpServlet {
 
         StringBuffer pollTableQuery = new StringBuffer();
         pollTableQuery.append("create table `" + poll_id + "` (");
-        String[] candidates = data.candidates.split("|");
+        String[] candidates = data.candidates.split("\\|");
 
         for (String s : candidates) {
             pollTableQuery.append("`" + s + "` int default 0, ");

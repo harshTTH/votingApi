@@ -53,7 +53,7 @@ public class VerifyVoter extends HttpServlet {
             return false;
         }
 
-        String[] voterList = res.getString("voters").split("|");
+        String[] voterList = res.getString("voters").split("\\|");
         for (String s : voterList) {
             String[] row = s.split("&");
             if (row[1].equals(number)) {
@@ -87,7 +87,7 @@ public class VerifyVoter extends HttpServlet {
             // Expecting 'poll_id' and 'number' as a single JSON Object in request
             if (rawData.length() > 0) {
                 if (valid(rawData)) {
-                    // Here I have to do the Socket Route thing
+                    out.print(true);
                 } else {
                     out.print(false);
                 }
