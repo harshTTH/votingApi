@@ -118,7 +118,7 @@ public class AddNewPoll extends HttpServlet {
         String[] candidates = data.candidates.split("\\|");
 
         for (String s : candidates) {
-            pollTableQuery.append("`" + s + "` int default 0, ");
+            pollTableQuery.append(s.replace(' ', '_') + " int default 0, ");
         }
 
         pollTableQuery.deleteCharAt(pollTableQuery.length() - 1);
