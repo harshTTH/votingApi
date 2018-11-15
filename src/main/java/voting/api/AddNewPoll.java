@@ -108,7 +108,6 @@ public class AddNewPoll extends HttpServlet {
         // This block of code creates a unique polling table for each new poll
         // StringBuffer is Thread Safe, StringBuilder is not, functionality is same
         // So, I changed it, rest all was okay
-        // Except the way Mohit created the tables, it would have given some serious SQL Exceptions
         res = stmt.executeQuery("select id_no from polls where title = '" + data.title + "';");
         res.next();
         String poll_id = res.getString("id_no");
@@ -228,6 +227,7 @@ public class AddNewPoll extends HttpServlet {
             reader.close();
 
         } catch (Exception e) {
+            out.println(e);
             e.printStackTrace(out);
         }
 

@@ -42,6 +42,12 @@
         <servlet-class>voting.api.VerifyVoter</servlet-class>
     </servlet>
 
+    <servlet>
+	    <display-name>Cast Vote</display-name>
+	    <servlet-name>CastVote</servlet-name>
+    <servlet-class>voting.api.CastVote</servlet-class>
+    </servlet>
+
     <servlet-mapping>
         <servlet-name>AdminLogin</servlet-name>
         <url-pattern>/adminLogin</url-pattern>
@@ -66,5 +72,10 @@
         <servlet-name>VerifyVoter</servlet-name>
         <url-pattern>/verifyVoter</url-pattern>
     </servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>CastVote</servlet-name>
+		<url-pattern>/castVote</url-pattern>
+	</servlet-mapping>
 
 </web-app>
