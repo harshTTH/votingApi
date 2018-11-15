@@ -49,17 +49,22 @@ public class CastVote extends HttpServlet {
 
     }
 
-    private final void updateDataBase(String poll_id, String candidate, String number) throws Exception {
+    private final boolean updateDataBase(String poll_id, String candidate, String number) throws Exception {
 
-        Class.forName("com.mysql.jdbc.Driver");
-        Connection conn = DriverManager.getConnection(DB, USER, PASS);
-        Statement stmt = conn.createStatement();
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            Connection conn = DriverManager.getConnection(DB, USER, PASS);
+            Statement stmt = conn.createStatement();
 
-        stmt.execute("update `" + poll_id + "` set " + candidate + " = " + candidate + " + 1;");
-        stmt.execute("insert into voters values ('" + poll_id + '&' + number + "');");
+            stmt.execute("update `" + poll_id + "` set " + candidate + " = " + candidate + " + 1;");
+            stmt.execute("insert into voters values ('" + poll_id + '&' + number + "');");
 
-        stmt.close();
-        conn.close();
+            stmt.close();
+            conn.close();
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
 
     }
 
@@ -91,8 +96,7 @@ public class CastVote extends HttpServlet {
                 String candidate = jsonObject.getString("candidate");
                 response.setContentType("text/html");
                 out = response.getWriter();
-                updateDataBase(poll_id, candidate.replace(' ', '_'), number);
-                out.print(true);
+                out.print(updateDataBase(poll_id, candidate.replace(' ', '_'), number));
             }
 
             reader.close();
